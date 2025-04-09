@@ -49,6 +49,7 @@ module "gitlab_runner" {
 | runner_tags | Tags to assign to the GitLab runner | `list(string)` | `[]` | no |
 | instance_name | Name for the EC2 instance | `string` | `"gitlab-runner"` | no |
 | additional_security_group_ids | Additional security group IDs to attach to the instance | `list(string)` | `[]` | no |
+| tags | A map of tags to add to all resources | `map(string)` | `{}` | no |
 
 ## Outputs
 
@@ -170,6 +171,13 @@ module "gitlab_runner" {
   subnet_id           = "subnet-0123456789abcdef0"
   vpc_id              = "vpc-0123456789abcdef0"
   gitlab_runner_token = "glrt-XXXXXXXXXXXXXXXXXXXX" # Replace with your actual GitLab runner token
+  
+  # Optional AWS resource tagging
+  tags = {
+    Environment = "Production"
+    Project     = "GitLab-CI"
+    ManagedBy   = "Terraform"
+  }
   
   # Optional parameters with defaults
   aws_region          = "us-east-1"

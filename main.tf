@@ -61,6 +61,12 @@ variable "additional_security_group_ids" {
   default     = []
 }
 
+variable "tags" {
+  description = "A map of tags to add to all resources"
+  type        = map(string)
+  default     = {}
+}
+
 # No additional variables needed for Docker executor
 
 resource "aws_security_group" "gitlab_runner" {
@@ -86,9 +92,12 @@ resource "aws_security_group" "gitlab_runner" {
     description = "Allow all outbound traffic"
   }
 
-  tags = {
-    Name = "${var.instance_name}-sg"
-  }
+  tags = merge(
+    {
+      Name = "${var.instance_name}-sg"
+    },
+    var.tags
+  )
 }
 
 # No worker security group needed for Docker executor
@@ -109,9 +118,12 @@ resource "aws_iam_role" "gitlab_runner_role" {
     ]
   })
 
-  tags = {
-    Name = "${var.instance_name}-role"
-  }
+  tags = merge(
+    {
+      Name = "${var.instance_name}-role"
+    },
+    var.tags
+  )
 }
 
 # Attach SSM policy if SSM is enabled
@@ -148,9 +160,12 @@ resource "aws_instance" "gitlab_runner" {
     runner_tags         = join(",", var.runner_tags)
   })
 
-  tags = {
-    Name = var.instance_name
-  }
+  tags = merge(
+    {
+      Name = var.instance_name
+    },
+    var.tags
+  )
 }
 
 # Remove Elastic IP to avoid exposing public IP
